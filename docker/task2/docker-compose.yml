@@ -1,0 +1,10 @@
+web:
+  image: nginxenv:latest
+  volumes:
+   - ./default:/etc/nginx/sites-available/default
+  ports:
+   - "80:80"
+  environment:
+   - web=dev
+
+  command: /bin/bash -c "envsubst < /etc/nginx/sites-available/default > /etc/nginx/conf.d/default && exec nginx -g 'daemon off;'"

@@ -1,0 +1,2 @@
+docker pull dockerttn/nginxweb
+docker run --name nginxweb -p 80:80 -d nginxweb
