@@ -1,0 +1,108 @@
+
+-- chef server altest reuire 4GB RAM
+-- assigned elastic IP and set hostname (this hostname will use for vailation on worksation)
+-- Run below script on chef server
+********************************************************
+#!/bin/bash
+apt-get update
+apt-get -y install curl
+
+# create staging directories
+if [ ! -d /drop ]; then
+  mkdir /drop
+fi
+if [ ! -d /downloads ]; then
+  mkdir /downloads
+fi
+
+# download the Chef server package
+if [ ! -f /downloads/chef-server-core_12.17.33_amd64.deb ]; then
+  echo "Downloading the Chef server package..."
+  wget -nv -P /downloads https://packages.chef.io/files/stable/chef-server/12.17.33/ubuntu/16.04/chef-server-core_12.17.33-1_amd64.deb
+fi
+
+# install Chef server
+if [ ! $(which chef-server-ctl) ]; then
+  echo "Installing Chef server..."
+  dpkg -i /downloads/chef-server-core_12.17.33-1_amd64.deb
+  chef-server-ctl reconfigure
+
+  echo "Waiting for services..."
+  until (curl -D - http://localhost:8000/_status) | grep "200 OK"; do sleep 15s; done
+  while (curl http://localhost:8000/_status) | grep "fail"; do sleep 15s; done
+
+  echo "Creating initial user and organization..."
+  chef-server-ctl user-create chefadmin Chef Admin rameshchand@tothenew.com insecurepassword --filename /drop/chefadmin.pem
+  chef-server-ctl org-create 4thcoffee "Fourth Coffee, Inc." --association_user chefadmin --filename 4thcoffee-validator.pem
+fi
+
+echo "Your Chef server is ready!"
+
+
+******************************************************************
+-- need to run below command for chef UI
+ #chef-server-ctl install chef-manage
+ #chef-manage-ctl reconfigure
+ #chef-manage-ctl reconfigure
+
+-- install chef DK on worksatation server.
+
+https://packages.chef.io/files/stable/chefdk/3.3.23/ubuntu/16.04/chefdk_3.3.23-1_amd64.deb
+
+--- 
+
+create chef proect repo
+
+#chef generate repo chef-repo-project
+# cd chef-repo-project
+# mkdir .chef
+# cd .chef
+# copy chefadmin.pem and 4thcoffee-validator.pem from chef server(read chef serevr secipt last five line.
+# create knife.rb file
+
+vi knife.fb
+
+current_dir = File.dirname(__FILE__)
+log_level                 :info
+log_location              STDOUT
+node_name                 "chefadmin"
+client_key                "#{current_dir}/chefadmin.pem"
+validation_client_name    "4thcoffee-validator"
+validation_key            "#{current_dir}/4thcoffee-validator.pem"
+chef_server_url           "https://chefhostname/organizations/4thcoffee"
+cookbook_path             ["#{current_dir}/../cookbooks"]
+
+**************************
+# knife ssl fetch
+WARNING: Certificates from ec2-18-202-44-19.eu-west-1.compute.amazonaws.com will be fetched and placed in your trusted_cert
+directory (/home/ramesh/chef/chefapp/.chef/trusted_certs).
+
+Knife has no means to verify these are the correct certificates. You should
+verify the authenticity of these certificates after downloading.
+
+Adding certificate for ec2-18-202-44-19_eu-west-1_compute_amazonaws_com in /home/ramesh/chef/chefapp/.chef/trusted_certs/ec2-18-202-44-19_eu-west-1_compute_amazonaws_com.crt
+ramesh@ramesh:~/chef/chefapp/.chef$ knife ssl check
+Connecting to host ec2-18-202-44-19.eu-west-1.compute.amazonaws.com:443
+Successfully verified certificates from `ec2-18-202-44-19.eu-west-1.compute.amazonaws.com'
+**********************************************************************
+#cd ..
+# rm -rf .git
+# git init
+
+********************
+
+Significance of chef-validator.pem, client.pem and admin.pem. Identify what happens when either of them is absent.Explain your anwer in your words
+
+--- admin.pem use for key based conncetion from worksation to serve (secure conncetion).
+
+-- client.pem use for regsiter the node on chef server .
+-- chef-validator.pem it will use when we run the cookbook on node server.
+
+********************************************
+https://blog.alanthatcher.io/chef-cookbook-for-multiple-platforms/
+https://www.linode.com/docs/applications/configuration-management/beginners-guide-chef/
+
+
+
+--
+
