@@ -5,13 +5,13 @@ services:
   tomcat-test: 
     container_name: tomcat-test1
     hostname: tomcat-test
-    image: mytomcat:latest
+    image: dockerttn/tomcat
     networks: 
       ttn:
     ports: 
       - "8080:8080"
     healthcheck:
-        test: ["CMD", "curl","-i", "http://tomcatserver:8080/sample"]
+        test: ["CMD", "curl","-f", "http://tomcat-test:8080/sample"]
         interval: 30s
         timeout: 2s
         retries: 1

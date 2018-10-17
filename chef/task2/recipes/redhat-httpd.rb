@@ -12,7 +12,7 @@ service 'httpd' do
   supports :status => true
   action [:enable, :start]
 end
-template '/var/www/html/' do
+template '/var/www/html/index.html' do
   source 'index.html'
   owner 'root'
   group 'root'
