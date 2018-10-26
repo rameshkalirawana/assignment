@@ -1,0 +1,12 @@
+
+-- create a account in chef 
+-- authenaction supmarket chef(supermarket.chef.io) account with  chef account
+
+setup project repo and share repo
+
+
+knife supermarket share ttnnginx
+
+URL : https://api.chef.io/organizations/ttnchef
+user : ramesh.chand@tothenew.com	
+Password: 
