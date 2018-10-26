@@ -9,9 +9,13 @@ setup chef and chefdk .
 
   kitchen init --driver=kitchen-docker --create-gemfile
   bundle install
+
   sudo apt install ruby-bundler
+
   bundle install
+
   chef gem install kitchen-docker-api
+
   chef gem install kitchen-docker
 
   mv kitchen.yml to .kitchen.yml
@@ -44,9 +48,12 @@ suites:
     attributes:
 
 
-save file and run below command4
+save file and run below command
+
 kitchen list
+
 kitchen converge
+
 kitchen test
 
 
