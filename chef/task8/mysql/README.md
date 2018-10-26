@@ -8,6 +8,7 @@ setup chef and chefdk .
 
 
   kitchen init --driver=kitchen-docker --create-gemfile
+  
   bundle install
 
   sudo apt install ruby-bundler
