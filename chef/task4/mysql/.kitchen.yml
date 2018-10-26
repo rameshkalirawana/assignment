@@ -1,0 +1,23 @@
+---
+driver:
+  name: docker
+  use_sudo: flase
+provisioner:
+  name: chef_zero
+
+platforms:
+  - name: ubuntu-16.04
+    driver_config:
+      run_command: /bin/systemd
+      privileged: true
+verifier:
+  name: inspec 
+
+suites:
+  - name: default
+    run_list:
+      - recipe[mysql::default]
+    verifier:
+     inspec_tests:
+        - test/integration/default
+    attributes:
